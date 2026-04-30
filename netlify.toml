@@ -1,0 +1,26 @@
+[build]
+  publish = "frontend"
+  functions = "netlify/functions"
+  command = "npm install"
+
+[functions]
+  node_bundler = "esbuild"
+
+[functions.analyze]
+  memory = 1024
+  timeout = 15
+
+[functions.chat]
+  memory = 512
+  timeout = 20
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

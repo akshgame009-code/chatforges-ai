@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatForge AI - Smart Chatbot Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #06070d;
+      --surface: #0e1019;
+      --surface2: #161824;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --purple: #8b5cf6;
+      --blue: #3b82f6;
+      --green: #22c55e;
+      --red: #ef4444;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --accent: #a78bfa;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+      background-image: 
+        radial-gradient(ellipse 60% 40% at 70% 20%, rgba(139,92,246,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 30% at 20% 80%, rgba(59,130,246,0.06) 0%, transparent 60%);
+    }
+    .container { max-width: 720px; margin: 0 auto; }
+    .header {
+      text-align: center;
+      padding: 50px 0 40px;
+      animation: fadeDown 0.6s ease;
+    }
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(139,92,246,0.12);
+      border: 1px solid rgba(139,92,246,0.3);
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #e2e8f0 0%, var(--accent) 50%, var(--blue) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .subtitle { color: var(--muted); font-size: 1rem; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 20px;
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .steps {
+      display: flex;
+      gap: 0;
+      margin-bottom: 28px;
+    }
+    .step {
+      flex: 1;
+      text-align: center;
+      padding: 10px 4px;
+      font-size: 11px;
+      color: var(--muted);
+      position: relative;
+    }
+    .step::after {
+      content: '→';
+      position: absolute;
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--border2);
+      font-size: 14px;
+    }
+    .step:last-child::after { display: none; }
+    .step-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      font-size: 12px;
+      font-weight: 600;
+      margin: 0 auto 6px;
+    }
+    .input-group { margin-bottom: 20px; }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
+    }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+    select option { background: #1e2937; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .chip:hover { border-color: var(--purple); color: var(--accent); }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.25s;
+      width: 100%;
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -8px rgba(139,92,246,0.5);
+    }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border2);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--purple); color: var(--accent); }
+    .btn-chat {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: none;
+    }
+    .btn-chat.show { display: inline-block; }
+    .btn-chat:hover { transform: translateY(-1px); box-shadow: 0 8px 20px -6px rgba(34,197,94,0.5); }
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .status {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .status.show { display: block; }
+    .status.success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
+    .status.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; }
+    .status.info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: #60a5fa; }
+    .output-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      overflow-x: auto;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.6;
+    }
+    .output-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-badge">⚡ ChatForge AI</div>
+      <h1>Build AI Chatbots<br>for Any Website</h1>
+      <p class="subtitle">Enter a URL → Analyze → Get a live AI chatbot in seconds</p>
+    </div>
+
+    <div class="card">
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div>Enter URL</div>
+        <div class="step"><div class="step-num">2</div>Pick Tone</div>
+        <div class="step"><div class="step-num">3</div>Chat Live</div>
+      </div>
+
+      <div class="input-group">
+        <label>🌐 Website URL</label>
+        <input type="url" id="url" placeholder="https://yourwebsite.com" autocomplete="off" />
+        <div class="chips">
+          <span class="chip" onclick="setUrl('https://example.com')">example.com</span>
+          <span class="chip" onclick="setUrl('https://github.com')">github.com</span>
+          <span class="chip" onclick="setUrl('https://stackoverflow.com')">stackoverflow.com</span>
+          <span class="chip" onclick="setUrl('https://wikipedia.org')">wikipedia.org</span>
+        </div>
+      </div>
+
+      <div class="divider">Personality</div>
+
+      <div class="input-group">
+        <label>🎭 Chatbot Tone</label>
+        <select id="presetPrompt">
+          <option value="">— Choose a preset —</option>
+          <option value="professional and formal">💼 Professional & Formal</option>
+          <option value="friendly and casual">😊 Friendly & Casual</option>
+          <option value="funny and humorous">😂 Funny & Humorous</option>
+          <option value="luxury and premium">✨ Luxury & Premium</option>
+          <option value="technical and detailed">🔧 Technical & Detailed</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>✏️ Custom Prompt <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+        <textarea id="customPrompt" rows="2" placeholder="e.g. Speak like a helpful cricket coach..."></textarea>
+      </div>
+
+      <button class="btn-primary" id="generateBtn" onclick="generate()">
+        ✨ Analyze & Generate Chatbot
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Output Config</div>
+      <div id="statusBox" class="status"></div>
+      <div class="output-box">
+        <pre id="output">Waiting for generation... 🚀</pre>
+      </div>
+      <div class="output-actions">
+        <button class="btn-secondary" onclick="copyConfig()">📋 Copy JSON</button>
+        <button class="btn-chat show" id="openChatBtn" onclick="openChat()" style="display:none">💬 Open Chatbot →</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentData = null;
+
+    function setUrl(url) {
+      document.getElementById('url').value = url;
+    }
+
+    function showStatus(msg, type) {
+      const el = document.getElementById('statusBox');
+      el.textContent = msg;
+      el.className = 'status show ' + type;
+      if (type === 'success') setTimeout(() => el.classList.remove('show'), 6000);
+    }
+
+    async function generate() {
+      const url = document.getElementById('url').value.trim();
+      const preset = document.getElementById('presetPrompt').value;
+      const custom = document.getElementById('customPrompt').value.trim();
+
+      if (!url) { showStatus('❌ Please enter a website URL', 'error'); return; }
+      if (!url.startsWith('http')) { showStatus('❌ URL must start with http:// or https://', 'error'); return; }
+
+      const prompt = custom || preset || 'professional and helpful';
+      const btn = document.getElementById('generateBtn');
+      const output = document.getElementById('output');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Analyzing website...';
+      output.textContent = '🔍 Fetching and analyzing website content...\nThis may take 5–10 seconds.';
+      showStatus('🔄 Analyzing website...', 'info');
+      document.getElementById('openChatBtn').style.display = 'none';
+
+      try {
+        const res = await fetch('/.netlify/functions/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, prompt })
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || 'HTTP ' + res.status);
+
+        currentData = data;
+        sessionStorage.setItem('botConfig', JSON.stringify(data));
+        output.textContent = JSON.stringify(data, null, 2);
+        showStatus('✅ Done! Click "Open Chatbot" to test it live with real AI.', 'success');
+        document.getElementById('openChatBtn').style.display = 'inline-block';
+
+      } catch (err) {
+        output.textContent = '❌ Error: ' + err.message + '\n\nTips:\n• Make sure the website is publicly accessible\n• Try example.com or github.com first\n• Some sites block scraping (403 error)';
+        showStatus('❌ ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '✨ Analyze & Generate Chatbot';
+      }
+    }
+
+    function copyConfig() {
+      if (!currentData) { showStatus('⚠️ Generate a chatbot first', 'error'); return; }
+      navigator.clipboard.writeText(JSON.stringify(currentData, null, 2))
+        .then(() => showStatus('✅ Copied to clipboard!', 'success'))
+        .catch(() => showStatus('❌ Copy failed', 'error'));
+    }
+
+    function openChat() {
+      window.location.href = '/chat.html';
+    }
+  </script>
+</body>
+</html>

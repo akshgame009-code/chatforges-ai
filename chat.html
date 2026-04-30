@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatForge AI | Smart Chatbot Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bg-animation div {
+      position: absolute;
+      display: block;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      bottom: -150px;
+      animation: floatUp 15s infinite;
+      border-radius: 50%;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1600px;
+      margin: 20px auto;
+      padding: 20px;
+      height: calc(100vh - 40px);
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+    }
+
+    /* Glassmorphism Cards */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .config-panel {
+      padding: 25px;
+      overflow-y: auto;
+      animation: slideInLeft 0.5s ease;
+    }
+
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideInRight 0.5s ease;
+    }
+
+    @keyframes slideInLeft {
+      from { transform: translateX(-50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Logo & Brand */
+    .brand {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .brand-icon {
+      font-size: 50px;
+      background: linear-gradient(135deg, #fff, #a8c0ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .brand h2 {
+      font-size: 24px;
+      background: linear-gradient(135deg, #fff, #e0c3ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-top: 10px;
+    }
+
+    /* Input Groups */
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .input-group label i {
+      margin-right: 8px;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      color: white;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .input-group input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Status Cards */
+    .status-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+    }
+
+    .status-item i {
+      width: 20px;
+      color: #a8c0ff;
+    }
+
+    /* Chat Header */
+    .chat-header {
+      padding: 25px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .chat-header h3 {
+      font-size: 22px;
+      color: white;
+      margin-bottom: 5px;
+    }
+
+    .chat-header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+    }
+
+    .online-badge {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      margin-right: 5px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Chat Messages */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 25px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      margin-bottom: 20px;
+      display: flex;
+      animation: fadeInUp 0.4s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message-avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+    }
+
+    .bot .message-avatar {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .user .message-avatar {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      margin-left: 10px;
+      margin-right: 0;
+    }
+
+    .message-content {
+      max-width: 65%;
+      padding: 12px 18px;
+      border-radius: 20px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .user .message-content {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+
+    .bot .message-content {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border-bottom-left-radius: 5px;
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      width: fit-content;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    /* Chat Input */
+    .chat-input-area {
+      padding: 20px 25px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      color: white;
+      font-size: 14px;
+    }
+
+    .chat-input-area input:focus {
+      outline: none;
+      border-color: white;
+    }
+
+    .chat-input-area button {
+      width: auto;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 25px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .chat-input-area button:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+
+    /* Quick Questions */
+    .quick-questions {
+      padding: 15px 25px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .quick-q {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .quick-q:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .chat-panel {
+        height: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-animation" id="bgAnimation"></div>
+
+  <div class="container">
+    <!-- Left Panel -->
+    <div class="config-panel glass-card">
+      <div class="brand">
+        <i class="fas fa-robot brand-icon"></i>
+        <h2>ChatForge AI</h2>
+        <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 5px;">Intelligent Chatbot Builder</p>
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-globe"></i> Website URL</label>
+        <input type="url" id="websiteUrl" placeholder="https://example.com" />
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-smile"></i> Bot Personality</label>
+        <select id="personality">
+          <option value="professional">💼 Professional</option>
+          <option value="friendly">😊 Friendly</option>
+          <option value="funny">😂 Funny</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" onclick="analyzeWebsite()" id="analyzeBtn">
+        <i class="fas fa-magic"></i> Generate Smart Bot
+      </button>
+
+      <div id="botStatus" class="status-card">
+        <div class="status-item">
+          <i class="fas fa-circle-info"></i>
+          <span>Ready to create your AI assistant</span>
+        </div>
+      </div>
+
+      <div id="botInfo" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="chat-panel glass-card">
+      <div class="chat-header">
+        <h3><span class="online-badge"></span> <span id="botName">AI Assistant</span></h3>
+        <p id="botStatusText">Configure a website to start</p>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="message bot">
+          <div class="message-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="message-content">
+            ✨ Welcome to ChatForge AI! ✨<br><br>
+            I'm your intelligent assistant. Let's get started:<br><br>
+            1️⃣ Enter a website URL above<br>
+            2️⃣ Click "Generate Smart Bot"<br>
+            3️⃣ Start asking questions!<br><br>
+            <i class="fas fa-rocket"></i> Ready when you are!
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <input type="text" id="userInput" placeholder="Type your message..." 
+               onkeypress="if(event.key === 'Enter') sendMessage()" />
+        <button onclick="sendMessage()" id="sendBtn">
+          <i class="fas fa-paper-plane"></i> Send
+        </button>
+      </div>
+
+      <div class="quick-questions" id="quickQuestions"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentBotConfig = null;
+    let chatHistory = [];
+
+    // Auto-load config from index.html if available
+    const savedConfig = sessionStorage.getItem("botConfig");
+    if (savedConfig) {
+      try { currentBotConfig = JSON.parse(savedConfig); } catch(e) {}
+    }
+
+    // Animated background
+    function createBubbles() {
+      const bg = document.getElementById('bgAnimation');
+      const bubbleCount = 50;
+      for (let i = 0; i < bubbleCount; i++) {
+        const bubble = document.createElement('div');
+        const size = Math.random() * 60 + 10;
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        bubble.style.left = Math.random() * 100 + '%';
+        bubble.style.animationDelay = Math.random() * 15 + 's';
+        bubble.style.animationDuration = Math.random() * 10 + 10 + 's';
+        bg.appendChild(bubble);
+      }
+    }
+    createBubbles();
+
+    async function analyzeWebsite() {
+      const url = document.getElementById("websiteUrl").value.trim();
+      const personality = document.getElementById("personality").value;
+      
+      if (!url) {
+        showNotification("Please enter a website URL", "error");
+        return;
+      }
+
+      const btn = document.getElementById("analyzeBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+
+      const statusDiv = document.getElementById("botStatus");
+      statusDiv.innerHTML = '<div class="status-item"><i class="fas fa-spinner fa-spin"></i><span>Analyzing website content...</span></div>';
+
+      try {
+        const response = await fetch("/.netlify/functions/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, prompt: personality })
+        });
+        
+        const config = await response.json();
+        
+        if (config.error) throw new Error(config.error);
+        
+        currentBotConfig = config;
+        
+        document.getElementById("botName").innerHTML = config.business_name || "AI Assistant";
+        document.getElementById("botStatusText").innerHTML = "✅ Online • Ready to chat";
+        
+        statusDiv.innerHTML = `
+          <div class="status-item"><i class="fas fa-check-circle" style="color: #4ade80;"></i><span>✅ Bot Created Successfully!</span></div>
+          <div class="status-item"><i class="fas fa-building"></i><span>${config.business_name}</span></div>
+          <div class="status-item"><i class="fas fa-comment"></i><span>${config.faq?.length || 0} FAQs Loaded</span></div>
+        `;
+        
+        document.getElementById("botInfo").innerHTML = `
+          <div class="status-card">
+            <div class="status-item"><i class="fas fa-info-circle"></i><span>${config.summary?.slice(0, 100)}...</span></div>
+            ${config.contact_info?.email ? `<div class="status-item"><i class="fas fa-envelope"></i><span>${config.contact_info.email}</span></div>` : ''}
+            ${config.contact_info?.phone ? `<div class="status-item"><i class="fas fa-phone"></i><span>${config.contact_info.phone}</span></div>` : ''}
+          </div>
+        `;
+        
+        // Reset chat with welcome message
+        const chatDiv = document.getElementById("chatMessages");
+        chatDiv.innerHTML = `
+          <div class="message bot">
+            <div class="message-avatar"><i class="fas fa-robot"></i></div>
+            <div class="message-content">
+              🎉 Bot ready! I'm ${config.business_name}'s AI assistant.<br><br>
+              Ask me about:<br>
+              • 📌 Services & Products<br>
+              • 📞 Contact Information<br>
+              • 💰 Pricing<br>
+              • 📍 Location<br><br>
+              What would you like to know?
+            </div>
+          </div>
+        `;
+        
+        // Quick questions
+        if (config.faq && config.faq.length) {
+          const quickDiv = document.getElementById("quickQuestions");
+          quickDiv.innerHTML = config.faq.slice(0, 3).map(faq => 
+            `<div class="quick-q" onclick="sendQuickQuestion('${faq.question.replace(/'/g, "\\'")}')">
+              💡 ${faq.question}
+            </div>`
+          ).join('');
+        }
+        
+      } catch (error) {
+        statusDiv.innerHTML = `<div class="status-item"><i class="fas fa-exclamation-triangle"></i><span>Error: ${error.message}</span></div>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-magic"></i> Generate Smart Bot';
+      }
+    }
+    
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const message = input.value.trim();
+      
+      if (!message) return;
+      if (!currentBotConfig) {
+        showNotification("Please generate a bot first!", "error");
+        return;
+      }
+      
+      addMessage(message, "user");
+      input.value = "";
+      showTyping();
+      
+      const sendBtn = document.getElementById("sendBtn");
+      sendBtn.disabled = true;
+      
+      try {
+        const response = await fetch("/.netlify/functions/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, botConfig: currentBotConfig, history: chatHistory })
+        });
+        
+        const data = await response.json();
+        removeTyping();
+        addMessage(data.reply, "bot");
+        chatHistory.push({ role: "user", content: message });
+        chatHistory.push({ role: "assistant", content: data.reply });
+        if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+        
+      } catch (error) {
+        removeTyping();
+        addMessage("Sorry, technical issue. Please try again! 🙏", "bot");
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+    
+    function addMessage(content, sender) {
+      const chatDiv = document.getElementById("chatMessages");
+      const msgDiv = document.createElement("div");
+      msgDiv.className = `message ${sender}`;
+      msgDiv.innerHTML = sender === 'bot' 
+        ? `<div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content">${content}</div>`
+        : `<div class="message-content">${content}</div><div class="message-avatar"><i class="fas fa-user"></i></div>`;
+      chatDiv.appendChild(msgDiv);
+      msgDiv.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+    
+    function showTyping() {
+      const chatDiv = document.getElementById("chatMessages");
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "message bot";
+      typingDiv.id = "typingIndicator";
+      typingDiv.innerHTML = `
+        <div class="message-avatar"><i class="fas fa-robot"></i></div>
+        <div class="typing-indicator"><span></span><span></span><span></span></div>
+      `;
+      chatDiv.appendChild(typingDiv);
+      typingDiv.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+    
+    function removeTyping() {
+      const indicator = document.getElementById("typingIndicator");
+      if (indicator) indicator.remove();
+    }
+    
+    function sendQuickQuestion(question) {
+      document.getElementById("userInput").value = question;
+      sendMessage();
+    }
+    
+    function showNotification(msg, type) {
+      // Simple alert for now
+      alert(msg);
+    }
+  </script>
+</body>
+</html>

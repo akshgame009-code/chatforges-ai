@@ -1,0 +1,20 @@
+{
+  "name": "chatforge-ai",
+  "version": "1.0.0",
+  "description": "AI Chatbot Builder for Websites",
+  "scripts": {
+    "start": "netlify dev",
+    "dev": "netlify dev --live",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "engines": {
+    "node": ">=18.x"
+  },
+  "keywords": ["chatbot", "ai", "netlify", "serverless"],
+  "author": "",
+  "license": "MIT"
+}
