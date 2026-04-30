@@ -1,18 +1,6 @@
 [build]
   publish = "."
-  functions = "netlify/functions"
-  command = "npm install"
-
-[functions]
-  node_bundler = "esbuild"
-
-[functions.analyze]
-  memory = 1024
-  timeout = 15
-
-[functions.chat]
-  memory = 512
-  timeout = 20
+  command = "echo done"
 
 [[redirects]]
   from = "/api/*"
